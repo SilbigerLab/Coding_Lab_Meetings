@@ -57,7 +57,7 @@ system.time(
 # user  system elapsed 
 # 0.670   0.018   1.353
 # Save the data as an .Rda file as it has a much better compression rate than .RData
-saveRDS(OISST_data, file="Monterey.Rproj.Rda")
+saveRDS(OISST_data, file="data/Monterey.Rproj.Rda")
 
 #dates saved as ""2015-01-01", end_date = "2019-08-29"
 mydates<-c("2015-01-01", "2019-08-29")

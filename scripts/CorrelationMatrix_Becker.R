@@ -15,7 +15,7 @@ library(here)
 here()
 
 #load in data files for parameters
-all.params.data <- read.csv("../data/physio.environ.data.csv") 
+all.params.data <- read.csv("data/physio.environ.data.csv") 
 
 #delete unnecessary columns from the new joined data sheet 
 #could also use select to not hardcode, using a pipe to select specific environ variables
@@ -48,7 +48,7 @@ ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) +
   geom_tile()
 
 #save general correlation matrix
-ggsave(filename = "../output/gen.correlation.matrix.png", device = "png", width = 20, height = 10)
+ggsave(filename = "output/gen.correlation.matrix.png", device = "png", width = 20, height = 10)
 
 # Get lower and upper triangle of the correlation matrix
 #Note that, a correlation matrix has redundant information. We’ll use the functions below to set half of it to NA
@@ -139,7 +139,7 @@ ggheatmap +
   guides(fill = guide_colorbar(barwidth = 12, barheight = 2, 
                                title.position = "top", title.hjust = 0.5, title.vjust = 1.0))
 
-ggsave(filename = "../output/final.correlation.matrix.png", device = "png", width = 10, height = 10)
+ggsave(filename = "output/final.correlation.matrix.png", device = "png", width = 10, height = 10)
 
 
 
