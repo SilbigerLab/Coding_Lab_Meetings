@@ -9,7 +9,7 @@ rm(list=ls()) #Clears the environment
 #load libraries
 library(vegan)
 library(tidyverse)
-library(gganimate)
+
 
 #load data from community comp surveys
 #source("scripts/tidepoolphysicalparameters.R")
@@ -19,6 +19,7 @@ Sessiles <- read_csv("data/SessilesAll.csv")
 Sessiles[is.na(Sessiles)]<-0 
 
 #convert characters to numeric in sessile sheet
+#could also use mutate if function in tidyverse to change character to numeric
 Sessiles$Epiactis.prolifera<-as.numeric(Sessiles$Epiactis.prolifera)
 Sessiles$Chaetomorpha.linum<-as.numeric(Sessiles$Chaetomorpha.linum)
 Sessiles$Costaria.costata<-as.numeric(Sessiles$Costaria.costata)
@@ -70,7 +71,7 @@ set.seed(267)
 Sessiles2Dquad<-metaMDS(Sessilespplist,k=2, distance='bray', trymax = 50, autotransform = FALSE) #add more iterations
 #only selectng spp to incorporate into nMDS plot
 
-#let's look at the 2D stress. Is it < 0.3? 
+#let's look at the 2D stress. Is it < 0.2? 
 Sessiles2Dquad$stress #0.1903921
 
 #stress plot for both transformed data
@@ -78,7 +79,7 @@ stressplot(Sessiles2Dquad)
 
 # basic plot
 ordiplot(Sessiles2Dquad) # dots represent tide pools and 
-#+ represents species
+# + represents species
 
 # add species names
 ordiplot(Sessiles2Dquad, type = 'text')
@@ -108,8 +109,6 @@ colnames(SessilesnMDS)[3:5]<- c("Foundation_spp","Removal_Control","Before_After
 #make mds column numeric
 SessilesnMDS$MDS1<-as.numeric(SessilesnMDS$MDS1)
 SessilesnMDS$MDS2<-as.numeric(SessilesnMDS$MDS2)
-
-
 
 ## add a column combining after before and foundation species
 SessilesnMDS$AB_F<-factor(paste(SessilesnMDS$Before_After, SessilesnMDS$Foundation_spp))
@@ -145,9 +144,8 @@ y1<-as.matrix(y1)
 groupings<-c("After Mytilus" = 1, "After Phyllospadix" = 2, "Before Mytilus" = 16, 
              "Before Phyllospadix" = 17)
 
-SessilesnMDSplot<- ggplot(SessilesnMDS, aes(x = MDS1 , y= MDS2, color = Removal_Control, shape = AB_F, frame = Before_After)) + #basic plot
+SessilesnMDSplot<- ggplot(SessilesnMDS, aes(x = MDS1 , y= MDS2, color = Removal_Control, shape = AB_F)) + #basic plot
   geom_point(size = 3, alpha = 0.2) + geom_point(data=centroids,size=7) +
-  scale_color_manual(values = c("#3182bd","#bdbdbd")) +
   theme_classic() +
   labs(x ='nMDS1', y = 'nMDS2', shape='Foundation Species', color ='Control or Removal') +
   geom_segment(aes(x = x0[1], y = y0[1], xend = x1[1], yend = y1[1]), #segment with arrow for Mussels before/after control
@@ -161,9 +159,10 @@ SessilesnMDSplot<- ggplot(SessilesnMDS, aes(x = MDS1 , y= MDS2, color = Removal_
   theme(legend.text = element_text(size=22, face ="italic"),
         legend.title = element_text(size = 22)) +
   scale_shape_manual(values=c(groupings)) +
+  scale_color_manual(values = c("#3182bd","#bdbdbd")) +
   theme(axis.text = element_text(color = "black", size = 18), 
         axis.title.x = element_text(color="black", size=24, face="bold"), 
         axis.title.y = element_text(color="black", size=24, face="bold"), 
         panel.grid.major=element_blank(), panel.grid.minor=element_blank()) 
 #ggsave("Output/CentroidmedianSessileplot.pdf",useDingbats = FALSE, width=25, height=22,dpi=300, unit="cm")
-gg_animate(SessilesnMDSplot)
+SessilesnMDSplot
