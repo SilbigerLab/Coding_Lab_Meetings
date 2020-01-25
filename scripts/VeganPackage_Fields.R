@@ -145,24 +145,26 @@ groupings<-c("After Mytilus" = 1, "After Phyllospadix" = 2, "Before Mytilus" = 1
              "Before Phyllospadix" = 17)
 
 SessilesnMDSplot<- ggplot(SessilesnMDS, aes(x = MDS1 , y= MDS2, color = Removal_Control, shape = AB_F)) + #basic plot
-  geom_point(size = 3, alpha = 0.2) + geom_point(data=centroids,size=7) +
+  geom_point(size = 3, alpha = 0.2, stroke = 2) + geom_point(data=centroids,size=8, stroke = 2.75) +
   theme_classic() +
   labs(x ='nMDS1', y = 'nMDS2', shape='Foundation Species', color ='Control or Removal') +
-  geom_segment(aes(x = x0[1], y = y0[1], xend = x1[1], yend = y1[1]), #segment with arrow for Mussels before/after control
-               arrow = arrow(length = unit(0.3, "cm"),type = "closed")) +
-  geom_segment(aes(x = x0[2], y = y0[2], xend = x1[2], yend = y1[2]), #segment with arrow for Mussels before/after removal
-               arrow = arrow(length = unit(0.3, "cm"),type = "closed")) +
-  geom_segment(aes(x = x0[3], y = y0[3], xend = x1[3], yend = y1[3]), #segment with arrow for phyllospadix before/after control
-               arrow = arrow(length = unit(0.3, "cm"),type = "closed")) +
-  geom_segment(aes(x = x0[4], y = y0[4], xend = x1[4], yend = y1[4]), #segment with arrow for phyllospadix before/after removal
-               arrow = arrow(length = unit(0.3, "cm"), type = "closed")) +
+  geom_segment(aes(x = x0[1], y = y0[1], xend = x1[1], yend = y1[1]),size = .7,#segment with arrow for Mussels before/after control
+               colour = "#3182bd", arrow = arrow(length = unit(0.3, "cm"),type = "closed")) +
+  geom_segment(aes(x = x0[2], y = y0[2], xend = x1[2], yend = y1[2]),linetype = 2,size = .7, #segment with arrow for Mussels before/after removal
+               colour = "#bdbdbd",arrow = arrow(length = unit(0.3, "cm"),type = "closed")) +
+  geom_segment(aes(x = x0[3], y = y0[3], xend = x1[3], yend = y1[3]),size = .7, #segment with arrow for phyllospadix before/after control
+               colour ="#3182bd", arrow = arrow(length = unit(0.3, "cm"),type = "closed")) +
+  geom_segment(aes(x = x0[4], y = y0[4], xend = x1[4], yend = y1[4]),linetype = 2,size = .7, #segment with arrow for phyllospadix before/after removal
+               colour = "#bdbdbd",arrow = arrow(length = unit(0.3, "cm"), type = "closed")) +
   theme(legend.text = element_text(size=22, face ="italic"),
-        legend.title = element_text(size = 22)) +
+        legend.title = element_text(size = 22),
+        legend.spacing = unit(1, unit = "cm")) +
   scale_shape_manual(values=c(groupings)) +
   scale_color_manual(values = c("#3182bd","#bdbdbd")) +
   theme(axis.text = element_text(color = "black", size = 18), 
         axis.title.x = element_text(color="black", size=24, face="bold"), 
         axis.title.y = element_text(color="black", size=24, face="bold"), 
-        panel.grid.major=element_blank(), panel.grid.minor=element_blank()) 
-#ggsave("Output/CentroidmedianSessileplot.pdf",useDingbats = FALSE, width=25, height=22,dpi=300, unit="cm")
+        panel.grid.major=element_blank(), panel.grid.minor=element_blank()) +
+  ggsave("Output/SessilenMDSplot.pdf",width=35, height=30,dpi=300, unit="cm")
 SessilesnMDSplot
+
