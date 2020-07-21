@@ -1,7 +1,14 @@
-# Create new variable "group" for grouping taxonomy
+### Working with large datasets - tidy, analyze, visualize
+###  Benthic survey data from the MCR LTER
+###  Scripted by Danielle Becker, Jamie Kerlin, and Danielle Barnas
+
 library(tidyverse)
 library(vegan)
+
+# clear environment
 rm(list=ls())
+
+# load data
 mcr_data<-read_csv("data/MCR_LTER_Annual_Survey_Benthic_Cover_LTER1.csv")
 
 # group species into taxonomic categories
@@ -20,12 +27,14 @@ mcr_wide <- mcr_grouped%>%
   pivot_wider(names_from = group,values_from = Percent_Cover)%>%
   replace(is.na(.),0) # replace "na" percent cover with "0" %cover
 
+# excluding Year and  Habitat columns
 group_cover <- mcr_wide %>%
   select(-c(Year, Habitat))
-# Statistical analysis
-# permanova
-# Independent variables: year and habitat
-# Dependent: percent cover of 6 groups
+
+## Statistical analysis
+##  permanova
+##  Independent variables: year and habitat
+##  Dependent variables: percent cover of 6 groups
 
 formula<-group_cover~Year*Habitat
 stats<-adonis2(formula,data=mcr_wide,method="bray",by="terms")
