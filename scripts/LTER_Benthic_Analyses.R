@@ -6,14 +6,17 @@ rm(list=ls())
 
 library(tidyverse)
 library(vegan)
+library(gganimate)
 library(ggplot2)
+library(transformr)
+library(gifski)
 library(here)
 
 here()
 
 
 # load data
-mcr_data<-read_csv("data/MCR_LTER_Annual_Survey_Benthic_Cover_LTER1.csv")
+mcr_data <- read_csv("data/MCR_LTER_Annual_Survey_Benthic_Cover_LTER1.csv")
 
 # group species into taxonomic categories
 mcr_grouped <- mcr_data %>% mutate(group = recode(Taxonomy_Substrate_Functional_Group, 'Algal Turf' = "algae", 'Amansia rhodantha' = "algae", 'Actinotrichia fragilis' = "algae", 'Amphiroa fragilissima' = "algae", 'Asparagopsis taxiformis' = "algae", 'Boodlea kaeneana' = "algae", 'Caulerpa racemosa' = "algae", 'Caulerpa serrulata' = "algae", 'Chlorodesmis fastigiata' = "algae", 'Chnoospora implexa' = "algae", 'Cladophoropsis membranacea' = "algae", 'Cyanophyta' = "algae", 'Damselfish Turf' = "algae", 'Dictyosphaeria cavernosa' = "algae", 'Dictyota bartayresiana' = "algae", 'Dictyota friabilis' = "algae", 'Dictyota sp.' = "algae", 'Galaxaura filamentosa' = "algae", 'Galaxaura rugosa' = "algae", 'Gibsmithia hawaiiensis' = "algae", 'Halimeda discoidea' = "algae", 'Halimeda distorta' = "algae", 'Halimeda incrassata' = "algae", 'Halimeda macroloba' = "algae", 'Halimeda minima' = "algae", 'Halimeda opuntia' = "algae", 'Halimeda sp.' = "algae", 'Halimeda taenicola' = "algae", 'Lobophora variegata' = "algae", 'Padina boryana' = "algae", 'Peyssonnelia bornetii' = "algae", 'Peyssonnelia inamoena' = "algae", 'Peyssonnelia sp.' = "algae", 'Ralfsia sp.' = "algae", 'Sargassum pacificum' = "algae", 'Symploca hydnoides' = "algae", 'Turbinaria ornata' = "algae", 'Valonia ventricosa' = "algae")) %>%
@@ -54,10 +57,12 @@ com <- mcr_wide[,3:ncol(mcr_wide)]
 com_matrix = as.matrix(com)
 
 #run metaMDS, set.seed is to maintain consistency 
+#slightly different answer everytime, R is psedorandom, set seed will set params to get same p value and other factors, exact same set of random numbers
 set.seed(123)
 nmds <- metaMDS(com_matrix, distance = "bray", k=2, trymax = 50, autotransform = FALSE)
 nmds
 
+#make stress plot
 stressplot(nmds)
 ordiplot(nmds, type = "text")
 
@@ -78,7 +83,7 @@ nmds_df2 <- nmds_df %>%
 
 nmds_ggplot <- ggplot(nmds_df, aes(x = NMDS1, y = NMDS2)) + 
   geom_point(size = 6, aes(shape = habitat, color = year)) + 
-  scale_color_continuous("year")
+  scale_color_continuous("year") 
 theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
       axis.text.x = element_text(colour = "black", face = "bold", size = 12), 
       legend.text = element_text(size = 12, face ="bold", colour ="black"), 
@@ -90,3 +95,22 @@ theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"),
   labs(x = "NMDS1", color = "year", y = "NMDS2", shape = "habitat")
 
 nmds_ggplot
+
+##steps to animate plot
+nmds_df$year <- as.integer(nmds_df$year)
+
+# Make a ggplot, but add frame=year: one image per year
+ggplot(nmds_df, aes(NMDS1, NMDS2, color = habitat, group = habitat)) +
+  geom_point(size = 3) +
+  geom_line() +
+  theme_bw() +
+  # gganimate specific bits:
+  labs(title = 'Year: {frame_time}', x = 'NMDS1', y = 'NMDS2', color = "Habitat") + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  transition_time(year) +
+  shadow_mark() +
+  ease_aes('linear')
+
+# Save as gif:
+anim_save("output/LTER_benthic_dat.gif")
+
