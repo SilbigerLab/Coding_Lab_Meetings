@@ -1,12 +1,16 @@
 ### Working with large datasets - tidy, analyze, visualize
 ###  Benthic survey data from the MCR LTER
 ###  Scripted by Danielle Becker, Jamie Kerlin, and Danielle Barnas
+# clear environment
+rm(list=ls())
 
 library(tidyverse)
 library(vegan)
+library(ggplot2)
+library(here)
 
-# clear environment
-rm(list=ls())
+here()
+
 
 # load data
 mcr_data<-read_csv("data/MCR_LTER_Annual_Survey_Benthic_Cover_LTER1.csv")
@@ -44,7 +48,7 @@ stats
 # nMDS plot
 
 #extract columns with abundance
-com <- mcr_wide_group[,3:ncol(mcr_wide_group)]
+com <- mcr_wide[,3:ncol(mcr_wide)]
 
 #df to matrix
 com_matrix = as.matrix(com)
@@ -61,14 +65,11 @@ ordiplot(nmds, type = "text")
 nmds_df <- as.data.frame(scores(nmds))
 
 #add columns from original data frame to new nmds df
-nmds_df$year = mcr_wide_group$Year
-nmds_df$habitat = mcr_wide_group$Habitat
+nmds_df$year = mcr_wide$Year
+nmds_df$habitat = mcr_wide$Habitat
 
 head(nmds_df)
 
-
-#plot nmds data
-library(ggplot2)
 
 #make year categorical variable
 nmds_df2 <- nmds_df %>%
